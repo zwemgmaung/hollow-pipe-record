@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Pipe Record",
+    "slug": "pipe-record",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1E3A6B"
+    },
+    "android": {
+      "package": "com.zeroskill.piperecord",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1E3A6B"
+      },
+      "permissions": ["android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_MEDIA_IMAGES"]
+    },
+    "plugins": [
+      ["expo-media-library", { "savePhotosPermission": "Allow Pipe Record to save JPEG records to your gallery." }]
+    ]
+  }
+}
