@@ -33,7 +33,7 @@ const colors = {
 };
 
 type PipeRow = { id: string; feet: string; qty: string };
-type PipeRecord = { site: string; date: string; rows: PipeRow[] };
+type PipeRecord = { site: string; date: string; rows: PipeRow[]; note: string };
 
 function toNumber(value: string): number {
   const n = parseFloat(value);
@@ -61,7 +61,7 @@ function today(): string {
 }
 
 function createRecord(): PipeRecord {
-  return { site: '', date: today(), rows: Array.from({ length: 5 }, createRow) };
+  return { site: '', date: today(), rows: Array.from({ length: 5 }, createRow), note: '' };
 }
 
 function usePipeRecord() {
@@ -87,6 +87,7 @@ function usePipeRecord() {
 
   const setSite = useCallback((site: string) => setRecord((r) => ({ ...r, site })), []);
   const setDate = useCallback((date: string) => setRecord((r) => ({ ...r, date })), []);
+  const setNote = useCallback((note: string) => setRecord((r) => ({ ...r, note })), []);
 
   const updateRow = useCallback((id: string, patch: Partial<PipeRow>) => {
     setRecord((r) => ({
@@ -117,7 +118,7 @@ function usePipeRecord() {
     [record.rows]
   );
 
-  return { record, loaded, savedAt, totals, setSite, setDate, updateRow, addRow, removeRow, clear };
+  return { record, loaded, savedAt, totals, setSite, setDate, setNote, updateRow, addRow, removeRow, clear };
 }
 
 async function saveViewAsJpeg(ref: React.RefObject<View | null>, fileName: string): Promise<string> {
@@ -194,7 +195,7 @@ function RecordTable({ rows, totals, capturing, onChange, onRemove }: RecordTabl
 }
 
 export default function App() {
-  const { record, loaded, savedAt, totals, setSite, setDate, updateRow, addRow, removeRow, clear } =
+  const { record, loaded, savedAt, totals, setSite, setDate, setNote, updateRow, addRow, removeRow, clear } =
     usePipeRecord();
   const sheetRef = useRef<View>(null);
   const [capturing, setCapturing] = useState(false);
@@ -247,7 +248,7 @@ export default function App() {
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <View ref={sheetRef} collapsable={false} style={styles.sheet}>
           <View style={styles.sheetHeader}>
-            <Image source={logo} style={styles.sheetLogo} />
+            {!capturing && <Image source={logo} style={styles.sheetLogo} />}
             <Text style={styles.sheetTitle}>Hollow Pipe Receiving Record</Text>
           </View>
 
@@ -282,7 +283,20 @@ export default function App() {
             onRemove={removeRow}
           />
 
-          <Text style={styles.credit}>Developed by Zwe Maung Maung</Text>
+          <View style={styles.noteWrap}>
+            <Text style={styles.noteLabel}>Remarks:</Text>
+            <TextInput
+              style={styles.noteInput}
+              value={record.note}
+              onChangeText={setNote}
+              placeholder={capturing ? '' : 'Write remarks here'}
+              placeholderTextColor={colors.muted}
+              multiline
+              textAlignVertical="top"
+            />
+          </View>
+
+          {!capturing && <Text style={styles.credit}>Developed by Zwe Maung Maung</Text>}
         </View>
 
         <Pressable style={styles.addBtn} onPress={addRow}>
@@ -355,6 +369,18 @@ const styles = StyleSheet.create({
     color: colors.success,
     fontStyle: 'italic',
   },
+  noteWrap: { marginTop: 14 },
+  noteLabel: { fontSize: 15, fontWeight: '700', color: colors.text, marginBottom: 6 },
+  noteInput: {
+    minHeight: 110,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
+    color: colors.text,
+    backgroundColor: '#fff',
+  },
   addBtn: {
     marginTop: 12,
     height: 46,
@@ -414,7 +440,6 @@ const styles = StyleSheet.create({
   totalText: { fontWeight: '700', fontSize: 16, color: colors.text },
   del: { width: 36, alignItems: 'center', justifyContent: 'center', height: 44 },
   delText: { color: colors.danger, fontSize: 16, fontWeight: '700' },
-  foot: { backgroundColor: '#E8EEF8', borderBottomWidth: 0 },
-  footText: { fontWeight: '800', fontSize: 16, color: colors.primary },
+  foot: { backgroundColor: '#E8EEF8', borderBottomWidth: 0, minHeight: 60 },
+  footText: { fontWeight: '900', fontSize: 22, color: colors.primary },
 });
-                      
